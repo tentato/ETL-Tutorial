@@ -1,5 +1,6 @@
 # https://developer.spotify.com/console/get-recently-played/
 
+import sqlite3
 import pandas as pd
 import sqlalchemy
 from sqlalchemy.orm import sessionmaker
@@ -9,6 +10,7 @@ from datetime import datetime
 import datetime
 
 TOKEN = "BQATAw5WI3tlOqELkqzMXFvewIQS272AotxLgHF0uHTaN5ze0SnPkyrr2DMmPXSOON1fF_HumfYIqcw0Vvd57m9f59VJo-iSN1a__Sd8wX1UQCFuX_92Zv5oudQet7Fs7h2RqeQRtG3lWs-afJpfah8SFEoK1LHym4u-EIIg"
+DATABASE_LOCATION = "C:\Users\alepa\Desktop\ETL Tutorial"
 
 def check_if_valid_data(df: pd.DataFrame) -> bool:
     # Check if DataFrame is empty
@@ -39,6 +41,7 @@ def check_if_valid_data(df: pd.DataFrame) -> bool:
 
 if __name__ == "__main__":
 
+    #Data Extraction (Extract)
     headers = {
         "Accept" : "application/json",
         "Content-Type" : "application/json",
@@ -80,6 +83,12 @@ if __name__ == "__main__":
 
     print(track_table)
 
-    # Data validation
+    # Data Validation (Transform)
     if check_if_valid_data(track_table):
         print("Data valid")
+
+    # Data Loading (Load)
+    engine = sqlalchemy.create_engine(DATABASE_LOCATION)
+    conn = sqlite3.connect('spotify_history.sqlite')
+    cursor = conn.cursor()
+    
