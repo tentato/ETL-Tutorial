@@ -41,4 +41,12 @@ if __name__ == "__main__":
         played_at_list.append(track["played_at"])
         timestamps.append(track["played_at"][0:10])
 
-    # song dictionary
+    # track dictionary
+    track_dict = {
+        "track_name" : track_names,
+        "artist_name" : artist_names,
+        "played_at" : played_at_list,
+        "timestamp" : timestamps
+    }
+
+    
