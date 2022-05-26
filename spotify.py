@@ -10,7 +10,7 @@ from datetime import datetime
 import datetime
 
 TOKEN = "BQATAw5WI3tlOqELkqzMXFvewIQS272AotxLgHF0uHTaN5ze0SnPkyrr2DMmPXSOON1fF_HumfYIqcw0Vvd57m9f59VJo-iSN1a__Sd8wX1UQCFuX_92Zv5oudQet7Fs7h2RqeQRtG3lWs-afJpfah8SFEoK1LHym4u-EIIg"
-DATABASE_LOCATION = "C:\Users\alepa\Desktop\ETL Tutorial"
+DATABASE_LOCATION = "sqlite:///spotify_history.sqlite"
 
 def check_if_valid_data(df: pd.DataFrame) -> bool:
     # Check if DataFrame is empty
@@ -91,4 +91,25 @@ if __name__ == "__main__":
     engine = sqlalchemy.create_engine(DATABASE_LOCATION)
     conn = sqlite3.connect('spotify_history.sqlite')
     cursor = conn.cursor()
+
+    query = """
+    CREATE TABLE IF NOT EXISTS spotify_history(
+        track_name VARCHAR(200),
+        artist_name VARCHAR(200),
+        played_at VARCHAR(200),
+        timestamp VARCHAR(200),
+        CONSTRAINT primary_key_constraint PRIMARY KEY (played_at)
+    )
     
+    """
+
+    cursor.execute(query)
+    print("Opened database successfully")
+
+    try:
+        track_table.to_sql("spotify_history", engine, index=False, if_exists='append')
+    except:
+        print("Data already exists in the database")
+
+    conn.close()
+    print("Closed database successfully")
