@@ -8,7 +8,29 @@ import json
 from datetime import datetime
 import datetime
 
-TOKEN = "BQBiNdc4VvCvho4zHYgqEbnOL3yRUFQ1kijilWclNYSt67P69QCpi11SMywP9wMAqTkLWchGuexMSDRosv_ZCtMt8cRKrkLxoQMgBb5ERkS227JMVzCqu1NdGm8yHGNtew0EaefffnrYaMIac-3mTmpMzhY2rtmQN1gPFhJ6"
+TOKEN = "BQBcAt7LeSsNU92_ddms5EnRvsMQLQ4DlGZ-gWcM1YeL5VCO4AjUmFPHRxJ2Gv-AGRY8P40YMJ8sk7KEwFiWao8pLn6Whj96kxcL3OE3CvGERJzUBZ5iSC3Ih2xoNtnECENne2oiUv3WtBQ-boYbYkLqKe6GhR3zotz3DWWn"
+
+def check_if_valid_data(df: pd.DataFrame) -> bool:
+    # Check if DataFrame is empty
+    if df.empty:
+        print("No songs found. Finishing execution")
+        return False
+
+    # Primary Key check
+    if pd.Series(df['played_at']).is_unique:
+        pass
+    else:
+        raise Exception("Primary Key Check is violated")
+
+    # Check for NULL values
+    if df.isnull().values.any():
+        raise Exception("Null value found")
+
+    # Check that all timestamps are of yesterday's date
+    yesterday = datetime.datetime.now() - datetime.timedelta(days=1)
+    yesterday = yesterday.replace(hour = 0, minute = 0, second = 0, microsecond = 0)
+
+    
 
 if __name__ == "__main__":
 
@@ -25,7 +47,7 @@ if __name__ == "__main__":
     # parsing to unix time format
     yesterday_unix = int(yesterday.timestamp())
 
-    r = requests.get("https://api.spotify.com/v1/me/player/recently-played?after={time}".format(time=yesterday_unix), headers = headers)
+    r = requests.get("https://api.spotify.com/v1/me/player/recently-played?limit=50&after={time}".format(time=yesterday_unix), headers = headers)
 
     data = r.json()
     #print(data)
@@ -49,4 +71,6 @@ if __name__ == "__main__":
         "timestamp" : timestamps
     }
 
-    
+    track_table = pd.DataFrame(track_dict, columns = ["track_name", "artist_name", "played_at", "timestamp"])
+
+    print(track_table)
