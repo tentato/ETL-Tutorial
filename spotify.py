@@ -9,7 +9,7 @@ import json
 from datetime import datetime
 import datetime
 
-TOKEN = "BQATAw5WI3tlOqELkqzMXFvewIQS272AotxLgHF0uHTaN5ze0SnPkyrr2DMmPXSOON1fF_HumfYIqcw0Vvd57m9f59VJo-iSN1a__Sd8wX1UQCFuX_92Zv5oudQet7Fs7h2RqeQRtG3lWs-afJpfah8SFEoK1LHym4u-EIIg"
+TOKEN = "BQBl0ldZOPz0OhH9jHOrmHR6mNlTKrhD-QB547EDsNJ_mn6Ed7k6JAAiprMa1b1CxvncKsFU0RcYK26HIRabk_rqcHCt8fO63ZzeGLGaC8wVqTBnhw29gNklSv_P8lKMVdkfLk2IoO8c3rPcLM6HhHAvSi9bJmV9IxAAzHsa"
 DATABASE_LOCATION = "sqlite:///spotify_history.sqlite"
 
 def check_if_valid_data(df: pd.DataFrame) -> bool:
@@ -29,13 +29,13 @@ def check_if_valid_data(df: pd.DataFrame) -> bool:
         raise Exception("Null value found")
 
     # Check that all timestamps are of yesterday's date
-    yesterday = datetime.datetime.now() - datetime.timedelta(days=1)
-    yesterday = yesterday.replace(hour = 0, minute = 0, second = 0, microsecond = 0)
+    # yesterday = datetime.datetime.now() - datetime.timedelta(days=1)
+    # yesterday = yesterday.replace(hour = 0, minute = 0, second = 0, microsecond = 0)
 
-    timestamps = df['timestamp'].tolist()
-    for timestamp in timestamps:
-        if datetime.datetime.strptime(timestamp, "%Y-%m-%d") != yesterday:
-            raise Exception("Found a song which does not come from within the last 24 hours")
+    # timestamps = df['timestamp'].tolist()
+    # for timestamp in timestamps:
+    #     if datetime.datetime.strptime(timestamp, "%Y-%m-%d") != yesterday:
+    #         raise Exception("Found a song which does not come from within the last 24 hours")
 
     return True
 
@@ -53,12 +53,12 @@ if __name__ == "__main__":
     yesterday = today - datetime.timedelta(days=1)
 
     # parsing to unix time format
-    yesterday_unix = int(yesterday.timestamp())
+    # filter_date_unix = int(today.timestamp())*1000
+    filter_date_unix = int(yesterday.timestamp())*1000
 
-    r = requests.get("https://api.spotify.com/v1/me/player/recently-played?after={time}".format(time=yesterday_unix), headers = headers)
+    r = requests.get("https://api.spotify.com/v1/me/player/recently-played?limit=50&after={time}".format(time=filter_date_unix), headers = headers)
 
     data = r.json()
-    #print(data)
 
     track_names = []
     artist_names = []
