@@ -5,8 +5,8 @@ import sqlalchemy
 from sqlalchemy.orm import sessionmaker
 import requests
 import json
-import datetime
 from datetime import datetime
+import datetime
 
 TOKEN = "BQBiNdc4VvCvho4zHYgqEbnOL3yRUFQ1kijilWclNYSt67P69QCpi11SMywP9wMAqTkLWchGuexMSDRosv_ZCtMt8cRKrkLxoQMgBb5ERkS227JMVzCqu1NdGm8yHGNtew0EaefffnrYaMIac-3mTmpMzhY2rtmQN1gPFhJ6"
 
@@ -24,3 +24,8 @@ if __name__ == "__main__":
 
     # parsing to unix time format
     yesterday_unix = int(yesterday.timestamp())
+
+    r = requests.get("https://api.spotify.com/v1/me/player/recently-played?after={time}".format(time=yesterday_unix), headers = headers)
+
+    data = r.json()
+    print(data)
