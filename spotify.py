@@ -28,4 +28,17 @@ if __name__ == "__main__":
     r = requests.get("https://api.spotify.com/v1/me/player/recently-played?after={time}".format(time=yesterday_unix), headers = headers)
 
     data = r.json()
-    print(data)
+    #print(data)
+
+    track_names = []
+    artist_names = []
+    played_at_list = []
+    timestamps = []
+
+    for track in data["items"]:
+        track_names.append(track["track"]["name"])
+        artist_names.append(track["track"]["album"]["artists"][0]["name"])
+        played_at_list.append(track["played_at"])
+        timestamps.append(track["played_at"][0:10])
+
+    # song dictionary
