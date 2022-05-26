@@ -52,8 +52,6 @@ if __name__ == "__main__":
     # parsing to unix time format
     yesterday_unix = int(yesterday.timestamp())
 
-    print(yesterday_unix)
-
     r = requests.get("https://api.spotify.com/v1/me/player/recently-played?after={time}".format(time=yesterday_unix), headers = headers)
 
     data = r.json()
