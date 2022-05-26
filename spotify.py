@@ -8,7 +8,7 @@ import json
 from datetime import datetime
 import datetime
 
-TOKEN = "BQBcAt7LeSsNU92_ddms5EnRvsMQLQ4DlGZ-gWcM1YeL5VCO4AjUmFPHRxJ2Gv-AGRY8P40YMJ8sk7KEwFiWao8pLn6Whj96kxcL3OE3CvGERJzUBZ5iSC3Ih2xoNtnECENne2oiUv3WtBQ-boYbYkLqKe6GhR3zotz3DWWn"
+TOKEN = "BQATAw5WI3tlOqELkqzMXFvewIQS272AotxLgHF0uHTaN5ze0SnPkyrr2DMmPXSOON1fF_HumfYIqcw0Vvd57m9f59VJo-iSN1a__Sd8wX1UQCFuX_92Zv5oudQet7Fs7h2RqeQRtG3lWs-afJpfah8SFEoK1LHym4u-EIIg"
 
 def check_if_valid_data(df: pd.DataFrame) -> bool:
     # Check if DataFrame is empty
@@ -30,7 +30,12 @@ def check_if_valid_data(df: pd.DataFrame) -> bool:
     yesterday = datetime.datetime.now() - datetime.timedelta(days=1)
     yesterday = yesterday.replace(hour = 0, minute = 0, second = 0, microsecond = 0)
 
-    
+    timestamps = df['timestamp'].tolist()
+    for timestamp in timestamps:
+        if datetime.datetime.strptime(timestamp, "%Y-%m-%d") != yesterday:
+            raise Exception("Found a song which does not come from within the last 24 hours")
+
+    return True
 
 if __name__ == "__main__":
 
@@ -47,7 +52,9 @@ if __name__ == "__main__":
     # parsing to unix time format
     yesterday_unix = int(yesterday.timestamp())
 
-    r = requests.get("https://api.spotify.com/v1/me/player/recently-played?limit=50&after={time}".format(time=yesterday_unix), headers = headers)
+    print(yesterday_unix)
+
+    r = requests.get("https://api.spotify.com/v1/me/player/recently-played?after={time}".format(time=yesterday_unix), headers = headers)
 
     data = r.json()
     #print(data)
@@ -74,3 +81,7 @@ if __name__ == "__main__":
     track_table = pd.DataFrame(track_dict, columns = ["track_name", "artist_name", "played_at", "timestamp"])
 
     print(track_table)
+
+    # Data validation
+    if check_if_valid_data(track_table):
+        print("Data valid")
